@@ -1,0 +1,235 @@
+server:
+  port: 8746
+
+service-url:
+  user-service: http://localhost:8706
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8701/eureka/
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          #开启从注册中心动态创建路由的功能
+          enabled: true
+          #使用小写服务名，默认是大写
+      #          lower-case-service-id: true
+
+      routes:
+        - id: prefixpath_route2
+          #此处需要使用lb协议
+          uri: lb://spring-cloud-eureka-consumer
+          predicates:
+            - Method=GET
+          filters:
+            - PrefixPath=/hello-world
+#          第二个无效
+        - id: prefixpath_route
+          #此处需要使用lb协议
+          uri: lb://spring-cloud-eureka-provider
+          predicates:
+            - Method=GET
+          filters:
+            - PrefixPath=/hello-world
+
+
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: after_route
+#          uri: ${service-url.user-service}
+#          predicates:
+#            - After=2019-12-29T18:30:00+08:00[Asia/Shanghai]
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: before_route
+#          uri: ${service-url.user-service}
+#          predicates:
+#            - Before=2019-12-29T18:30:00+08:00[Asia/Shanghai]
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: before_route
+#          uri: ${service-url.user-service}
+#          predicates:
+#            - Between=2019-12-29T18:30:00+08:00[Asia/Shanghai], 2019-12-30T18:30:00+08:00[Asia/Shanghai]
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: cookie_route
+#          uri: ${service-url.user-service}
+#          predicates:
+#            - Cookie=username,jourwon
+##  curl http://localhost:9201/user/1 --cookie "username=jourwon"
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: header_route
+#          uri: ${service-url.user-service}
+#          predicates:
+#            - Header=X-Request-Id, \d+
+##  curl http://localhost:9201/user/1 -H "X-Request-Id:123"
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: host_route
+#          uri: ${service-url.user-service}
+#          predicates:
+#            - Host=**.jourwon.com
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: method_route
+#          uri: ${service-url.user-service}
+#          predicates:
+#            - Method=GET
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: path_route
+#          uri: ${service-url.user-service}/user/{id}
+#          predicates:
+#            - Path=/user/{id}
+##  curl http://localhost:9201/user/1
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: query_route
+#          uri: ${service-url.user-service}/user/getByUsername
+#          predicates:
+#            - Query=username
+##  curl http://localhost:9201/user/getByUsername?username=jourwon
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: remoteaddr_route
+#          uri: ${service-url.user-service}
+#          predicates:
+#            - RemoteAddr=192.168.1.1/24
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: weight_high
+#          uri: http://localhost:8201
+#          predicates:
+#            - Weight=group1, 8
+#        - id: weight_low
+#          uri: http://localhost:8202
+#          predicates:
+#            - Weight=group1, 2
+##  使用权重来路由相应请求，以上表示有80%的请求会被路由到localhost:8201，20%会被路由到localhost:8202。
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: add_request_parameter_route
+#          uri: http://localhost:8201
+#          filters:
+#            - AddRequestParameter=username, jourwon
+#          predicates:
+#            - Method=GET
+##  以上配置会对GET请求添加username=jourwon的请求参数，通过curl工具使用以下命令进行测试。
+##  curl http://localhost:9201/user/getByUsername
+##  curl http://localhost:8201/user/getByUsername?username=jourwon
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: strip_prefix_route
+#          uri: http://localhost:8201
+#          predicates:
+#            - Path=/user-service/**
+#          filters:
+#            - StripPrefix=2
+##  以上配置会把以/user-service/开头的请求的路径去除两位，通过curl工具使用以下命令进行测试。
+##  curl http://localhost:9201/user-service/a/user/1
+##  相当于
+##  curl http://localhost:8201/user/1
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: prefix_path_route
+#          uri: http://localhost:8201
+#          predicates:
+#            - Method=GET
+#          filters:
+#            - PrefixPath=/user
+##  以上配置会对所有GET请求添加/user路径前缀，通过curl工具使用以下命令进行测试。
+##  curl http://localhost:9201/1
+##  curl http://localhost:8201/user/1
+#
+##降级处理
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: hystrix_route
+#          uri: ${service-url.user-service}
+#          predicates:
+#            - Method=GET
+#          filters:
+#            - name: Hystrix
+#              args:
+#                name: fallbackcmd
+#                fallback-uri: forward:/fallback
+#
+##  我们使用Redis来进行限流，所以需要添加Redis和RequestRateLimiter的配置，这里对所有的GET请求都进行了按IP来限流的操作；
+#spring:
+#  redis:
+#    host: localhost
+#    password: 123456
+#    port: 6379
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: requestratelimiter_route
+#          uri: http://localhost:8201
+#          filters:
+#            - name: RequestRateLimiter
+#              args:
+#                # 每秒允许处理的请求数量
+#                redis-rate-limiter.replenishRate: 1
+#                # 每秒最大处理的请求数量
+#                redis-rate-limiter.burstCapacity: 2
+#                # 限流策略，对应策略的Bean
+#                key-resolver: "#{@ipKeyResolver}"
+#          predicates:
+#            - Method=GET
+#
+##  对路由请求进行重试的过滤器，可以根据路由请求返回的HTTP状态码来确定是否进行重试。
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: retry_route
+#          uri: http://localhost:8201
+#          predicates:
+#            - Method=GET
+#          filters:
+#            - name: Retry
+#              args:
+#                retries: 1 #需要进行重试的次数
+#                statuses: BAD_GATEWAY #返回哪个状态码需要进行重试，返回状态码为5XX进行重试
+#                backoff:
+#                  firstBackoff: 10ms
+#                  maxBackoff: 50ms
+#                  factor: 2
+#                  basedOnPreviousValue: false
+

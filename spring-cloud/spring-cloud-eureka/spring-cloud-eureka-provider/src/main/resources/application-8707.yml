@@ -1,0 +1,11 @@
+spring:
+  application:  # 应用名字，eureka 会根据它作为服务id
+    name: spring-cloud-eureka-provider
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8701/eureka/,http://localhost:8702/eureka/,http://localhost:8703/eureka/
+
+server:
+  port: 8707

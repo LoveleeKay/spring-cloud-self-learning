@@ -1,0 +1,14 @@
+#优先级低于配置中心获取到的
+config:
+  info: "config info for dev in application.yml(master)"
+
+#  @RefreshScope 对本地配置无效
+#  http://localhost:8741/actuator/refresh 刷新配置中心的内容
+application:
+  name: llys
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'refresh'

@@ -1,0 +1,28 @@
+spring:
+  application:  # 应用名字，eureka 会根据它作为服务id
+    name: spring-cloud-eureka-consumer
+
+#    链路采集专用
+#  1、下载zipkin https://repo1.maven.org/maven2/io/zipkin/java/zipkin-server/2.12.9/zipkin-server-2.12.9-exec.jar
+#  2启动、java -jar zipkin-server-2.12.9-exec.jar，默认端口9411，界面访问：http://localhost:9411
+  zipkin:
+    base-url: http://localhost:9411
+    #设置Sleuth的抽样收集概率
+  sleuth:
+    sampler:
+      probability: 0.1
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8701/eureka/,http://localhost:8702/eureka/,http://localhost:8703/eureka/
+
+server:
+  port: 8711
+
+management:
+  endpoints:
+    web:
+      exposure:
+        #暴露hystrix监控端点
+        include: '*'

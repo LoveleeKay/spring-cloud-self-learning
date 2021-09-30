@@ -1,0 +1,21 @@
+spring:
+  application:  # 应用名字，eureka 会根据它作为服务id
+    name: spring-cloud-turbine
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8701/eureka/,http://localhost:8702/eureka/,http://localhost:8703/eureka/
+
+server:
+  port: 8731
+
+turbine:
+  # 指定需要收集信息的服务名称
+  app-config: spring-cloud-hystrix
+  # 指定服务所属集群
+  cluster-name-expression: new String('default')
+  # 以主机名和端口号区分服务
+  combine-host-port: true
+
+
